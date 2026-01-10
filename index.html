@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rancang Solusi Digital Sederhana</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+
+    html, body, .app-container {
+      height: 100%;
+      width: 100%;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #ffffff;
+      padding: 20px;
+      gap: 15px;
+    }
+
+    .header {
+      text-align: center;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .problem-section {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 20px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .problem-section h2 {
+      margin: 0 0 10px 0;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .problem-section p {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .main-content {
+      display: flex;
+      gap: 15px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .features-panel {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      overflow-y: auto;
+    }
+
+    .features-panel h3 {
+      margin: 0 0 15px 0;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feature-item {
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      cursor: move;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      user-select: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .feature-item.dragging {
+      opacity: 0.5;
+    }
+
+    .design-area {
+      flex: 2;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 20px;
+      color: #333;
+      overflow-y: auto;
+    }
+
+    .design-area h3 {
+      margin: 0 0 15px 0;
+      font-size: 18px;
+      color: #667eea;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mockup-container {
+      background: #f8f9fa;
+      border: 3px dashed #667eea;
+      border-radius: 12px;
+      min-height: 200px;
+      padding: 20px;
+      position: relative;
+    }
+
+    .mockup-container.drag-over {
+      background: #e3e7ff;
+      border-color: #4c51bf;
+    }
+
+    .mockup-empty {
+      text-align: center;
+      color: #999;
+      padding: 40px 20px;
+      font-size: 14px;
+    }
+
+    .code-block {
+      background: #ffffff;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .code-block-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .code-block-icon {
+      font-size: 20px;
+    }
+
+    .code-block-text {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .remove-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: background 0.2s ease;
+    }
+
+    .remove-btn:hover {
+      background: #dc2626;
+    }
+
+    .action-section {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 20px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .action-btn {
+      background: rgba(255, 255, 255, 0.9);
+      color: #667eea;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      background: #ffffff;
+    }
+
+    .action-btn.success {
+      background: #10b981;
+      color: white;
+    }
+
+    .action-btn.success:hover {
+      background: #059669;
+    }
+
+    .action-btn.warning {
+      background: #f59e0b;
+      color: white;
+    }
+
+    .action-btn.warning:hover {
+      background: #d97706;
+    }
+
+    .feedback-message {
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .feedback-message.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .feedback-message h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      color: #667eea;
+    }
+
+    .feedback-message p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="app-container">
+   <div class="header">
+    <h1 id="judul-utama">🎯 Rancang Solusi Digital Sederhana</h1>
+   </div>
+   <div class="problem-section">
+    <h2>📋 A. Masalah Utama</h2>
+    <p id="masalah-text">"Sering lupa tugas dan jadwal kegiatan"</p>
+   </div>
+   <div class="main-content">
+    <div class="features-panel">
+     <h3>🧩 B. Pilihan Fitur</h3>
+     <div id="features-list">
+      <div class="feature-item" draggable="true" data-feature="schedule"><span>📅</span> <span>Tambah Jadwal</span>
+      </div>
+      <div class="feature-item" draggable="true" data-feature="reminder"><span>⏰</span> <span>Pengingat Waktu</span>
+      </div>
+      <div class="feature-item" draggable="true" data-feature="notification"><span>🔔</span> <span>Notifikasi</span>
+      </div>
+      <div class="feature-item" draggable="true" data-feature="tasklist"><span>✅</span> <span>Daftar Tugas</span>
+      </div>
+     </div>
+    </div>
+    <div class="design-area">
+     <h3>🎨 C. Area Perancangan</h3>
+     <div class="mockup-container" id="mockup-container">
+      <div class="mockup-empty" id="mockup-empty">
+       Seret dan lepas fitur dari panel kiri ke sini untuk mulai merancang solusi digital Anda!
+      </div>
+     </div>
+     <div class="feedback-message" id="feedback-message">
+      <h4 id="feedback-title">Hasil Evaluasi</h4>
+      <p id="feedback-text"></p>
+     </div>
+    </div>
+   </div>
+   <div class="action-section"><button class="action-btn success" id="test-btn"> <span>🧪</span> <span id="button-uji">Uji Solusi</span> </button> <button class="action-btn warning" id="improve-btn"> <span>💡</span> <span id="button-perbaiki">Perbaiki</span> </button> <button class="action-btn" id="reset-btn"> <span>🔄</span> <span id="button-reset">Reset</span> </button>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      judul_utama: "🎯 Rancang Solusi Digital Sederhana",
+      masalah_text: '"Sering lupa tugas dan jadwal kegiatan"',
+      button_uji: "Uji Solusi",
+      button_perbaiki: "Perbaiki",
+      button_reset: "Reset",
+      background_color: "#667eea",
+      surface_color: "#ffffff",
+      text_color: "#333333",
+      primary_action_color: "#10b981",
+      secondary_action_color: "#f59e0b"
+    };
+
+    let draggedElement = null;
+    let addedFeatures = [];
+
+    const featureData = {
+      schedule: { icon: "📅", text: "Tambah Jadwal" },
+      reminder: { icon: "⏰", text: "Pengingat Waktu" },
+      notification: { icon: "🔔", text: "Notifikasi" },
+      tasklist: { icon: "✅", text: "Daftar Tugas" }
+    };
+
+    function setupDragAndDrop() {
+      const featureItems = document.querySelectorAll('.feature-item');
+      const mockupContainer = document.getElementById('mockup-container');
+
+      featureItems.forEach(item => {
+        item.addEventListener('dragstart', (e) => {
+          draggedElement = e.target;
+          e.target.classList.add('dragging');
+        });
+
+        item.addEventListener('dragend', (e) => {
+          e.target.classList.remove('dragging');
+        });
+      });
+
+      mockupContainer.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        mockupContainer.classList.add('drag-over');
+      });
+
+      mockupContainer.addEventListener('dragleave', () => {
+        mockupContainer.classList.remove('drag-over');
+      });
+
+      mockupContainer.addEventListener('drop', (e) => {
+        e.preventDefault();
+        mockupContainer.classList.remove('drag-over');
+        
+        if (draggedElement) {
+          const featureId = draggedElement.getAttribute('data-feature');
+          addFeatureToMockup(featureId);
+        }
+      });
+    }
+
+    function addFeatureToMockup(featureId) {
+      if (addedFeatures.includes(featureId)) {
+        return;
+      }
+
+      addedFeatures.push(featureId);
+      const feature = featureData[featureId];
+      
+      const mockupEmpty = document.getElementById('mockup-empty');
+      if (mockupEmpty) {
+        mockupEmpty.style.display = 'none';
+      }
+
+      const codeBlock = document.createElement('div');
+      codeBlock.className = 'code-block';
+      codeBlock.setAttribute('data-feature-id', featureId);
+      
+      codeBlock.innerHTML = `
+        <div class="code-block-content">
+          <span class="code-block-icon">${feature.icon}</span>
+          <span class="code-block-text">${feature.text}</span>
+        </div>
+        <button class="remove-btn">Hapus</button>
+      `;
+
+      const removeBtn = codeBlock.querySelector('.remove-btn');
+      removeBtn.addEventListener('click', () => {
+        removeFeature(featureId, codeBlock);
+      });
+
+      document.getElementById('mockup-container').appendChild(codeBlock);
+      hideFeedback();
+    }
+
+    function removeFeature(featureId, element) {
+      addedFeatures = addedFeatures.filter(id => id !== featureId);
+      element.remove();
+
+      if (addedFeatures.length === 0) {
+        const mockupEmpty = document.getElementById('mockup-empty');
+        if (mockupEmpty) {
+          mockupEmpty.style.display = 'block';
+        }
+      }
+      hideFeedback();
+    }
+
+    function testSolution() {
+      const feedbackMessage = document.getElementById('feedback-message');
+      const feedbackTitle = document.getElementById('feedback-title');
+      const feedbackText = document.getElementById('feedback-text');
+
+      if (addedFeatures.length === 0) {
+        feedbackTitle.textContent = "⚠️ Solusi Belum Lengkap";
+        feedbackText.textContent = "Belum ada fitur yang ditambahkan. Silakan seret fitur dari panel kiri untuk mulai merancang solusi Anda!";
+        showFeedback();
+        return;
+      }
+
+      const hasSchedule = addedFeatures.includes('schedule');
+      const hasReminder = addedFeatures.includes('reminder');
+      const hasNotification = addedFeatures.includes('notification');
+      const hasTasklist = addedFeatures.includes('tasklist');
+
+      let feedback = "";
+      let title = "";
+
+      if (addedFeatures.length >= 3 && hasSchedule && (hasReminder || hasNotification)) {
+        title = "✅ Solusi Sangat Baik!";
+        feedback = "Hebat! Solusi Anda mencakup fitur-fitur penting untuk mengatasi masalah lupa jadwal. Kombinasi jadwal, pengingat, dan notifikasi akan membantu pengguna tetap terorganisir.";
+      } else if (addedFeatures.length >= 2 && hasSchedule) {
+        title = "👍 Solusi Cukup Baik";
+        feedback = "Bagus! Anda sudah menambahkan fitur jadwal yang merupakan inti dari solusi. Pertimbangkan untuk menambahkan pengingat waktu atau notifikasi agar lebih efektif.";
+      } else {
+        title = "💡 Perlu Perbaikan";
+        feedback = "Solusi Anda masih bisa ditingkatkan. Untuk mengatasi masalah 'sering lupa', minimal diperlukan fitur Tambah Jadwal dan Pengingat Waktu atau Notifikasi.";
+      }
+
+      feedbackTitle.textContent = title;
+      feedbackText.textContent = feedback;
+      showFeedback();
+    }
+
+    function improveSolution() {
+      const feedbackMessage = document.getElementById('feedback-message');
+      const feedbackTitle = document.getElementById('feedback-title');
+      const feedbackText = document.getElementById('feedback-text');
+
+      feedbackTitle.textContent = "💡 Saran Perbaikan";
+      
+      let suggestions = "Saran untuk meningkatkan solusi Anda:\n\n";
+      
+      if (!addedFeatures.includes('schedule')) {
+        suggestions += "• Tambahkan fitur 'Tambah Jadwal' sebagai fondasi aplikasi\n";
+      }
+      if (!addedFeatures.includes('reminder')) {
+        suggestions += "• Tambahkan 'Pengingat Waktu' agar pengguna mendapat notifikasi tepat waktu\n";
+      }
+      if (!addedFeatures.includes('notification')) {
+        suggestions += "• Tambahkan 'Notifikasi' untuk memberi tahu pengguna tentang kegiatan\n";
+      }
+      if (!addedFeatures.includes('tasklist')) {
+        suggestions += "• Tambahkan 'Daftar Tugas' untuk mencatat semua hal yang perlu dilakukan\n";
+      }
+
+      if (addedFeatures.length === 4) {
+        suggestions = "Solusi Anda sudah sangat lengkap! Semua fitur sudah ditambahkan. Pertimbangkan untuk menguji apakah semua fitur ini benar-benar dibutuhkan atau ada yang bisa disederhanakan.";
+      }
+
+      feedbackText.textContent = suggestions;
+      showFeedback();
+    }
+
+    function resetSolution() {
+      addedFeatures = [];
+      const mockupContainer = document.getElementById('mockup-container');
+      const codeBlocks = mockupContainer.querySelectorAll('.code-block');
+      codeBlocks.forEach(block => block.remove());
+
+      const mockupEmpty = document.getElementById('mockup-empty');
+      if (mockupEmpty) {
+        mockupEmpty.style.display = 'block';
+      }
+
+      hideFeedback();
+    }
+
+    function showFeedback() {
+      const feedbackMessage = document.getElementById('feedback-message');
+      feedbackMessage.classList.add('show');
+    }
+
+    function hideFeedback() {
+      const feedbackMessage = document.getElementById('feedback-message');
+      feedbackMessage.classList.remove('show');
+    }
+
+    document.getElementById('test-btn').addEventListener('click', testSolution);
+    document.getElementById('improve-btn').addEventListener('click', improveSolution);
+    document.getElementById('reset-btn').addEventListener('click', resetSolution);
+
+    async function onConfigChange(config) {
+      document.getElementById('judul-utama').textContent = config.judul_utama || defaultConfig.judul_utama;
+      document.getElementById('masalah-text').textContent = config.masalah_text || defaultConfig.masalah_text;
+      document.getElementById('button-uji').textContent = config.button_uji || defaultConfig.button_uji;
+      document.getElementById('button-perbaiki').textContent = config.button_perbaiki || defaultConfig.button_perbaiki;
+      document.getElementById('button-reset').textContent = config.button_reset || defaultConfig.button_reset;
+
+      const backgroundColor = config.background_color || defaultConfig.background_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const primaryActionColor = config.primary_action_color || defaultConfig.primary_action_color;
+      const secondaryActionColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+
+      document.querySelector('.app-container').style.background = `linear-gradient(135deg, ${backgroundColor} 0%, #764ba2 100%)`;
+      document.querySelector('.design-area').style.background = `rgba(255, 255, 255, 0.95)`;
+      document.querySelector('.design-area').style.color = textColor;
+      
+      const successBtn = document.querySelector('.action-btn.success');
+      successBtn.style.background = primaryActionColor;
+      
+      const warningBtn = document.querySelector('.action-btn.warning');
+      warningBtn.style.background = secondaryActionColor;
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => {
+                config.background_color = value;
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => {
+                config.surface_color = value;
+                window.elementSdk.setConfig({ surface_color: value });
+              }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => {
+                config.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => config.primary_action_color || defaultConfig.primary_action_color,
+              set: (value) => {
+                config.primary_action_color = value;
+                window.elementSdk.setConfig({ primary_action_color: value });
+              }
+            },
+            {
+              get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+              set: (value) => {
+                config.secondary_action_color = value;
+                window.elementSdk.setConfig({ secondary_action_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["judul_utama", config.judul_utama || defaultConfig.judul_utama],
+          ["masalah_text", config.masalah_text || defaultConfig.masalah_text],
+          ["button_uji", config.button_uji || defaultConfig.button_uji],
+          ["button_perbaiki", config.button_perbaiki || defaultConfig.button_perbaiki],
+          ["button_reset", config.button_reset || defaultConfig.button_reset]
+        ])
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setupDragAndDrop();
+    });
+
+    setupDragAndDrop();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bb84c4c56c0a2f5',t:'MTc2ODAwNzQ2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
