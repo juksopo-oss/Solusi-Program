@@ -1,620 +1,921 @@
 <!doctype html>
-<html lang="id">
+<html lang="id" class="h-full">
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rancang Solusi Digital Sederhana</title>
+  <title>Simulasi IoT Interaktif</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
   <style>
     body {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
     }
-
-    html, body, .app-container {
-      height: 100%;
-      width: 100%;
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
     }
-
-    .app-container {
-      display: flex;
-      flex-direction: column;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #ffffff;
-      padding: 20px;
-      gap: 15px;
+    
+    .glow-card {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.1);
     }
-
-    .header {
-      text-align: center;
-      padding: 15px;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
+    
+    .neon-text {
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.5), 0 0 20px rgba(56, 189, 248, 0.3);
     }
-
-    .header h1 {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 700;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    
+    .pulse-glow {
+      animation: pulseGlow 2s ease-in-out infinite;
     }
-
-    .problem-section {
-      background: rgba(255, 255, 255, 0.2);
-      padding: 20px;
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(255, 255, 255, 0.3);
+    
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(250, 204, 21, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(250, 204, 21, 0.8); }
     }
-
-    .problem-section h2 {
-      margin: 0 0 10px 0;
-      font-size: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
     }
-
-    .problem-section p {
-      margin: 0;
-      font-size: 16px;
-      line-height: 1.5;
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
-
-    .main-content {
-      display: flex;
-      gap: 15px;
-      flex: 1;
-      min-height: 0;
-    }
-
-    .features-panel {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      padding: 20px;
-      backdrop-filter: blur(10px);
-      overflow-y: auto;
-    }
-
-    .features-panel h3 {
-      margin: 0 0 15px 0;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .feature-item {
-      background: rgba(255, 255, 255, 0.9);
-      color: #333;
-      padding: 12px 15px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      cursor: move;
+    
+    .drag-item {
+      cursor: grab;
       transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      user-select: none;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-
-    .feature-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    
+    .drag-item:active {
+      cursor: grabbing;
     }
-
-    .feature-item.dragging {
+    
+    .drag-item.dragging {
       opacity: 0.5;
+      transform: scale(1.05);
     }
-
-    .design-area {
-      flex: 2;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 12px;
-      padding: 20px;
-      color: #333;
-      overflow-y: auto;
-    }
-
-    .design-area h3 {
-      margin: 0 0 15px 0;
-      font-size: 18px;
-      color: #667eea;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .mockup-container {
-      background: #f8f9fa;
-      border: 3px dashed #667eea;
-      border-radius: 12px;
-      min-height: 200px;
-      padding: 20px;
-      position: relative;
-    }
-
-    .mockup-container.drag-over {
-      background: #e3e7ff;
-      border-color: #4c51bf;
-    }
-
-    .mockup-empty {
-      text-align: center;
-      color: #999;
-      padding: 40px 20px;
-      font-size: 14px;
-    }
-
-    .code-block {
-      background: #ffffff;
-      border: 2px solid #667eea;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .code-block-content {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex: 1;
-    }
-
-    .code-block-icon {
-      font-size: 20px;
-    }
-
-    .code-block-text {
-      font-weight: 600;
-      color: #333;
-    }
-
-    .remove-btn {
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 12px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      transition: background 0.2s ease;
-    }
-
-    .remove-btn:hover {
-      background: #dc2626;
-    }
-
-    .action-section {
-      background: rgba(255, 255, 255, 0.2);
-      padding: 20px;
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      display: flex;
-      gap: 15px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .action-btn {
-      background: rgba(255, 255, 255, 0.9);
-      color: #667eea;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 14px;
+    
+    .drop-zone {
       transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .drop-zone.drag-over {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: #38bdf8;
+      transform: scale(1.02);
+    }
+    
+    .drop-zone.correct {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: #22c55e;
+    }
+    
+    .step-indicator {
+      transition: all 0.4s ease;
+    }
+    
+    .step-indicator.active {
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      transform: scale(1.1);
+    }
+    
+    .step-indicator.completed {
+      background: #22c55e;
+    }
+    
+    .option-btn {
+      transition: all 0.3s ease;
+    }
+    
+    .option-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.3);
+    }
+    
+    .option-btn.selected {
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      border-color: transparent;
+    }
+    
+    .lamp-bulb {
+      transition: all 0.5s ease;
+    }
+    
+    .lamp-bulb.on {
+      fill: #facc15;
+      filter: drop-shadow(0 0 20px #facc15) drop-shadow(0 0 40px #facc15);
+    }
+    
+    .sensor-beam {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .sensor-beam.active {
+      opacity: 1;
+      animation: beamPulse 1s ease-in-out infinite;
+    }
+    
+    @keyframes beamPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+    }
+    
+    .connection-line {
+      stroke-dasharray: 10;
+      animation: flowLine 1s linear infinite;
+    }
+    
+    @keyframes flowLine {
+      to { stroke-dashoffset: -20; }
+    }
+    
+    .success-popup {
+      animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    
+    @keyframes popIn {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
-    .action-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      background: #ffffff;
+    .case-card {
+      transition: all 0.3s ease;
     }
-
-    .action-btn.success {
-      background: #10b981;
-      color: white;
+    
+    .case-card:hover {
+      transform: translateY(-5px);
     }
-
-    .action-btn.success:hover {
-      background: #059669;
-    }
-
-    .action-btn.warning {
-      background: #f59e0b;
-      color: white;
-    }
-
-    .action-btn.warning:hover {
-      background: #d97706;
-    }
-
-    .feedback-message {
-      background: rgba(255, 255, 255, 0.95);
-      color: #333;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 15px;
-      display: none;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    .feedback-message.show {
-      display: block;
-      animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .feedback-message h4 {
-      margin: 0 0 8px 0;
-      font-size: 16px;
-      color: #667eea;
-    }
-
-    .feedback-message p {
-      margin: 0;
-      font-size: 14px;
-      line-height: 1.5;
+    
+    .case-card.active {
+      border-color: #38bdf8;
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
-  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
  </head>
- <body>
-  <div class="app-container">
-   <div class="header">
-    <h1 id="judul-utama">🎯 Rancang Solusi Digital Sederhana</h1>
-   </div>
-   <div class="problem-section">
-    <h2>📋 A. Masalah Utama</h2>
-    <p id="masalah-text">"Sering lupa tugas dan jadwal kegiatan"</p>
-   </div>
-   <div class="main-content">
-    <div class="features-panel">
-     <h3>🧩 B. Pilihan Fitur</h3>
-     <div id="features-list">
-      <div class="feature-item" draggable="true" data-feature="schedule"><span>📅</span> <span>Tambah Jadwal</span>
-      </div>
-      <div class="feature-item" draggable="true" data-feature="reminder"><span>⏰</span> <span>Pengingat Waktu</span>
-      </div>
-      <div class="feature-item" draggable="true" data-feature="notification"><span>🔔</span> <span>Notifikasi</span>
-      </div>
-      <div class="feature-item" draggable="true" data-feature="tasklist"><span>✅</span> <span>Daftar Tugas</span>
-      </div>
+ <body class="h-full gradient-bg text-white overflow-hidden">
+  <div id="app-wrapper" class="h-full w-full flex flex-col"><!-- Header -->
+   <header class="flex-shrink-0 px-6 py-3 flex items-center justify-between border-b border-slate-700/50">
+    <div class="flex items-center gap-4">
+     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center">
+      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+      </svg>
      </div>
+     <div>
+      <h1 id="main-title" class="text-xl font-bold neon-text">Perancangan Solusi Digital Berbasis IoT</h1>
+      <p id="subject-info" class="text-sm text-slate-400">Koding &amp; AI | Kelas 9 SMP</p>
+     </div>
+    </div><!-- Step Indicators -->
+    <div class="flex items-center gap-3"><button onclick="goToStep(1)" class="step-indicator w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-sm active" data-step="1">1</button>
+     <div class="w-8 h-1 bg-slate-700 rounded"></div><button onclick="goToStep(2)" class="step-indicator w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-sm" data-step="2">2</button>
+     <div class="w-8 h-1 bg-slate-700 rounded"></div><button onclick="goToStep(3)" class="step-indicator w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-sm" data-step="3">3</button>
     </div>
-    <div class="design-area">
-     <h3>🎨 C. Area Perancangan</h3>
-     <div class="mockup-container" id="mockup-container">
-      <div class="mockup-empty" id="mockup-empty">
-       Seret dan lepas fitur dari panel kiri ke sini untuk mulai merancang solusi digital Anda!
+   </header><!-- Main Content -->
+   <main class="flex-1 overflow-hidden"><!-- Step 1: Apersepsi Interaktif -->
+    <section id="step1" class="h-full p-6 flex gap-6"><!-- Left: Simulation -->
+     <div class="flex-1 glow-card rounded-2xl p-6 flex flex-col">
+      <div class="flex items-center gap-2 mb-4"><span class="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-xs font-semibold">SIMULASI</span> <span class="text-slate-400 text-sm">Apersepsi Interaktif</span>
+      </div>
+      <h2 class="text-2xl font-bold mb-6">🏠 Ruangan Pintar</h2><!-- Room Simulation -->
+      <div class="flex-1 relative bg-slate-900/50 rounded-xl overflow-hidden">
+       <svg class="w-full h-full" viewbox="0 0 500 300" preserveaspectratio="xMidYMid meet"><!-- Room --> <rect x="50" y="50" width="400" height="200" fill="#1e293b" stroke="#475569" stroke-width="2" rx="5" /> <!-- Door --> <rect id="door" x="380" y="100" width="60" height="140" fill="#334155" stroke="#64748b" stroke-width="2" rx="3" /> <circle cx="395" cy="170" r="5" fill="#94a3b8" /> <!-- Lamp --> <g id="lamp-group" transform="translate(200, 80)">
+         <line x1="50" y1="0" x2="50" y2="20" stroke="#64748b" stroke-width="2" />
+         <path id="lamp-bulb" class="lamp-bulb" d="M30 20 Q30 50 50 50 Q70 50 70 20 Q70 10 50 10 Q30 10 30 20" fill="#475569" />
+         <ellipse id="lamp-glow" cx="50" cy="100" rx="80" ry="50" fill="url(#lampGradient)" opacity="0" />
+        </g> <!-- Sensor --> <g id="sensor-group" transform="translate(350, 60)">
+         <rect x="0" y="0" width="30" height="20" fill="#334155" stroke="#38bdf8" stroke-width="1" rx="3" />
+         <circle cx="15" cy="10" r="5" fill="#38bdf8" id="sensor-light" />
+         <path id="sensor-beam" class="sensor-beam" d="M15 25 L-30 140 L60 140 Z" fill="url(#sensorGradient)" />
+        </g> <!-- Person --> <g id="person" transform="translate(450, 150)" style="transition: transform 1s ease">
+         <circle cx="0" cy="-20" r="15" fill="#f59e0b" />
+         <rect x="-12" y="0" width="24" height="35" fill="#3b82f6" rx="5" />
+         <rect x="-15" y="35" width="10" height="25" fill="#1e40af" rx="3" />
+         <rect x="5" y="35" width="10" height="25" fill="#1e40af" rx="3" />
+        </g> <!-- Gradients --> <defs>
+         <radialgradient id="lampGradient">
+          <stop offset="0%" stop-color="#facc15" stop-opacity="0.6" />
+          <stop offset="100%" stop-color="#facc15" stop-opacity="0" />
+         </radialgradient>
+         <lineargradient id="sensorGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.5" />
+          <stop offset="100%" stop-color="#38bdf8" stop-opacity="0" />
+         </lineargradient>
+        </defs>
+       </svg><!-- Control Button --> <button id="simButton" onclick="runSimulation()" class="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-semibold flex items-center gap-2 hover:scale-105 transition-transform">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg> Jalankan Simulasi </button>
+      </div>
+     </div><!-- Right: Questions -->
+     <div class="w-96 glow-card rounded-2xl p-6 flex flex-col">
+      <div class="flex items-center gap-2 mb-4"><span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-semibold">PERTANYAAN</span>
+      </div>
+      <h3 class="text-xl font-bold mb-6">🤔 Ayo Berpikir!</h3>
+      <div class="flex-1 flex flex-col gap-4"><!-- Question 1 -->
+       <div id="q1" class="p-4 bg-slate-800/50 rounded-xl">
+        <p class="text-sm text-slate-300 mb-3">Apakah lampu ini "pintar"?</p>
+        <div class="flex gap-2"><button onclick="answerQ1('ya')" class="option-btn flex-1 py-2 px-4 border-2 border-slate-600 rounded-lg text-sm font-medium hover:border-cyan-400">✅ Ya</button> <button onclick="answerQ1('tidak')" class="option-btn flex-1 py-2 px-4 border-2 border-slate-600 rounded-lg text-sm font-medium hover:border-cyan-400">��� Tidak</button>
+        </div>
+        <p id="q1-feedback" class="mt-3 text-sm hidden"></p>
+       </div><!-- Question 2 -->
+       <div id="q2" class="p-4 bg-slate-800/50 rounded-xl opacity-50">
+        <p class="text-sm text-slate-300 mb-3">Apa yang membuat lampu bisa bereaksi?</p>
+        <div class="flex flex-col gap-2"><button onclick="answerQ2('sensor')" class="option-btn py-2 px-4 border-2 border-slate-600 rounded-lg text-sm font-medium text-left hover:border-cyan-400">📡 Sensor mendeteksi gerakan</button> <button onclick="answerQ2('sihir')" class="option-btn py-2 px-4 border-2 border-slate-600 rounded-lg text-sm font-medium text-left hover:border-cyan-400">✨ Sihir / Keajaiban</button> <button onclick="answerQ2('manual')" class="option-btn py-2 px-4 border-2 border-slate-600 rounded-lg text-sm font-medium text-left hover:border-cyan-400">👆 Dinyalakan manual</button>
+        </div>
+        <p id="q2-feedback" class="mt-3 text-sm hidden"></p>
+       </div>
+      </div><!-- Next Button --> <button id="nextStep1" onclick="goToStep(2)" class="mt-4 w-full py-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl font-semibold flex items-center justify-center gap-2 opacity-50 pointer-events-none transition-all"> Lanjut ke Konsep IoT 
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+       </svg></button>
+     </div>
+    </section><!-- Step 2: Simulasi Konsep IoT -->
+    <section id="step2" class="h-full p-6 hidden">
+     <div class="h-full glow-card rounded-2xl p-6 flex flex-col">
+      <div class="flex items-center justify-between mb-4">
+       <div class="flex items-center gap-2"><span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold">AKTIVITAS</span> <span class="text-slate-400 text-sm">Susun Alur Kerja IoT</span>
+       </div><button onclick="resetDragDrop()" class="px-4 py-2 bg-slate-700 rounded-lg text-sm hover:bg-slate-600 transition-colors">🔄 Reset</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-2">🔗 Bagaimana IoT Bekerja?</h2>
+      <p class="text-slate-400 mb-6">Seret dan letakkan komponen ke urutan yang benar!</p>
+      <div class="flex-1 flex flex-col gap-6"><!-- Drag Items -->
+       <div class="flex justify-center gap-4 flex-wrap" id="drag-container">
+        <div class="drag-item px-6 py-4 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-2 border-amber-500 rounded-xl cursor-grab" draggable="true" data-item="sensor">
+         <div class="text-3xl mb-2">
+          📡
+         </div>
+         <div class="font-semibold">
+          Sensor Gerak
+         </div>
+         <div class="text-xs text-slate-400">
+          Mendeteksi objek
+         </div>
+        </div>
+        <div class="drag-item px-6 py-4 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border-2 border-blue-500 rounded-xl cursor-grab" draggable="true" data-item="internet">
+         <div class="text-3xl mb-2">
+          🌐
+         </div>
+         <div class="font-semibold">
+          WiFi/Internet
+         </div>
+         <div class="text-xs text-slate-400">
+          Mengirim data
+         </div>
+        </div>
+        <div class="drag-item px-6 py-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-2 border-purple-500 rounded-xl cursor-grab" draggable="true" data-item="sistem">
+         <div class="text-3xl mb-2">
+          🖥️
+         </div>
+         <div class="font-semibold">
+          Server/Sistem
+         </div>
+         <div class="text-xs text-slate-400">
+          Memproses data
+         </div>
+        </div>
+        <div class="drag-item px-6 py-4 bg-gradient-to-r from-yellow-500/20 to-green-500/20 border-2 border-yellow-500 rounded-xl cursor-grab" draggable="true" data-item="aksi">
+         <div class="text-3xl mb-2">
+          💡
+         </div>
+         <div class="font-semibold">
+          Lampu (Aksi)
+         </div>
+         <div class="text-xs text-slate-400">
+          Output/Respon
+         </div>
+        </div>
+       </div><!-- Drop Zones -->
+       <div class="flex-1 flex items-center justify-center">
+        <div class="flex items-center gap-2">
+         <div class="drop-zone w-36 h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center" data-order="1" data-expected="sensor"><span class="text-4xl mb-1 text-slate-600">1️⃣</span> <span class="text-xs text-slate-500">Input</span>
+         </div>
+         <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+         </svg>
+         <div class="drop-zone w-36 h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center" data-order="2" data-expected="internet"><span class="text-4xl mb-1 text-slate-600">2️⃣</span> <span class="text-xs text-slate-500">Koneksi</span>
+         </div>
+         <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+         </svg>
+         <div class="drop-zone w-36 h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center" data-order="3" data-expected="sistem"><span class="text-4xl mb-1 text-slate-600">3️⃣</span> <span class="text-xs text-slate-500">Proses</span>
+         </div>
+         <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+         </svg>
+         <div class="drop-zone w-36 h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center" data-order="4" data-expected="aksi"><span class="text-4xl mb-1 text-slate-600">4️⃣</span> <span class="text-xs text-slate-500">Output</span>
+         </div>
+        </div>
+       </div><!-- Feedback -->
+       <div id="drag-feedback" class="text-center py-4 hidden">
+        <div class="success-popup inline-flex items-center gap-3 px-6 py-3 bg-green-500/20 border border-green-500 rounded-xl"><span class="text-3xl">🎉</span>
+         <div class="text-left">
+          <div class="font-bold text-green-400">
+           Hebat! Urutan Benar!
+          </div>
+          <div class="text-sm text-slate-300">
+           Sensor → Internet → Sistem → Aksi
+          </div>
+         </div>
+        </div>
+       </div>
+      </div><!-- Navigation -->
+      <div class="flex justify-between mt-4"><button onclick="goToStep(1)" class="px-6 py-3 bg-slate-700 rounded-xl font-semibold flex items-center gap-2 hover:bg-slate-600 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+        </svg> Kembali </button> <button id="nextStep2" onclick="goToStep(3)" class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl font-semibold flex items-center gap-2 opacity-50 pointer-events-none transition-all"> Lanjut ke Studi Kasus 
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg></button>
       </div>
      </div>
-     <div class="feedback-message" id="feedback-message">
-      <h4 id="feedback-title">Hasil Evaluasi</h4>
-      <p id="feedback-text"></p>
+    </section><!-- Step 3: Studi Kasus Mini -->
+    <section id="step3" class="h-full p-6 hidden">
+     <div class="h-full flex gap-6"><!-- Case Selection -->
+      <div class="w-80 flex flex-col gap-4">
+       <div class="flex items-center gap-2 mb-2"><span class="px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-xs font-semibold">STUDI KASUS</span>
+       </div>
+       <h2 class="text-xl font-bold mb-2">📋 Pilih Masalah</h2>
+       <div class="flex-1 flex flex-col gap-3 overflow-auto"><button onclick="selectCase(1)" class="case-card p-4 glow-card rounded-xl text-left active">
+         <div class="text-2xl mb-2">
+          💡
+         </div>
+         <div class="font-semibold">
+          Lampu Kelas
+         </div>
+         <div class="text-xs text-slate-400">
+          Sering lupa dimatikan
+         </div></button> <button onclick="selectCase(2)" class="case-card p-4 glow-card rounded-xl text-left">
+         <div class="text-2xl mb-2">
+          🌡️
+         </div>
+         <div class="font-semibold">
+          Suhu Ruangan
+         </div>
+         <div class="text-xs text-slate-400">
+          AC tidak efisien
+         </div></button> <button onclick="selectCase(3)" class="case-card p-4 glow-card rounded-xl text-left">
+         <div class="text-2xl mb-2">
+          🚰
+         </div>
+         <div class="font-semibold">
+          Keran Air
+         </div>
+         <div class="text-xs text-slate-400">
+          Pemborosan air
+         </div></button> <button onclick="selectCase(4)" class="case-card p-4 glow-card rounded-xl text-left">
+         <div class="text-2xl mb-2">
+          🅿️
+         </div>
+         <div class="font-semibold">
+          Parkir Sekolah
+         </div>
+         <div class="text-xs text-slate-400">
+          Sulit cari tempat
+         </div></button>
+       </div><button onclick="goToStep(2)" class="mt-2 px-6 py-3 bg-slate-700 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-slate-600 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+        </svg> Kembali </button>
+      </div><!-- Case Details -->
+      <div class="flex-1 glow-card rounded-2xl p-6 flex flex-col">
+       <div id="case-content"><!-- Case 1: Lampu Kelas -->
+        <div id="case1" class="h-full flex flex-col">
+         <div class="flex items-center gap-4 mb-6">
+          <div class="w-16 h-16 rounded-xl bg-yellow-500/20 flex items-center justify-center text-4xl">
+           💡
+          </div>
+          <div>
+           <h3 class="text-2xl font-bold">Masalah: Lampu Kelas</h3>
+           <p class="text-slate-400">"Lampu kelas sering lupa dimatikan saat istirahat"</p>
+          </div>
+         </div>
+         <div class="flex-1 grid grid-cols-2 gap-6"><!-- Sensor Selection -->
+          <div class="bg-slate-800/50 rounded-xl p-4">
+           <h4 class="font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center text-cyan-400">1</span> Sensor apa yang dibutuhkan?</h4>
+           <div class="flex flex-col gap-2"><button onclick="selectSensor(1, 'gerak')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">👋</span> Sensor Gerak (PIR) </button> <button onclick="selectSensor(1, 'suhu')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">🌡️</span> Sensor Suhu </button> <button onclick="selectSensor(1, 'cahaya')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">☀️</span> Sensor Cahaya (LDR) </button>
+           </div>
+           <p id="sensor-feedback-1" class="mt-3 text-sm hidden"></p>
+          </div><!-- Action Selection -->
+          <div class="bg-slate-800/50 rounded-xl p-4">
+           <h4 class="font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center text-purple-400">2</span> Aksi apa yang dilakukan sistem?</h4>
+           <div class="flex flex-col gap-2"><button onclick="selectAction(1, 'mati')" class="action-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-purple-400 transition-all"> <span class="text-xl mr-2">🔌</span> Matikan lampu otomatis </button> <button onclick="selectAction(1, 'notif')" class="action-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-purple-400 transition-all"> <span class="text-xl mr-2">📱</span> Kirim notifikasi </button> <button onclick="selectAction(1, 'alarm')" class="action-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-purple-400 transition-all"> <span class="text-xl mr-2">🔔</span> Bunyikan alarm </button>
+           </div>
+           <p id="action-feedback-1" class="mt-3 text-sm hidden"></p>
+          </div>
+         </div><!-- Solution Summary -->
+         <div id="solution-1" class="mt-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hidden">
+          <h4 class="font-bold text-green-400 mb-2">✅ Solusi IoT Kamu:</h4>
+          <div class="flex items-center gap-4 text-sm"><span class="px-3 py-1 bg-amber-500/20 rounded-lg" id="sol-sensor-1">📡 Sensor</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-blue-500/20 rounded-lg">🌐 Internet</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-purple-500/20 rounded-lg">🖥️ Sistem</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-green-500/20 rounded-lg" id="sol-action-1">💡 Aksi</span>
+          </div>
+         </div>
+        </div><!-- Case 2: Suhu Ruangan -->
+        <div id="case2" class="h-full flex flex-col hidden">
+         <div class="flex items-center gap-4 mb-6">
+          <div class="w-16 h-16 rounded-xl bg-blue-500/20 flex items-center justify-center text-4xl">
+           🌡️
+          </div>
+          <div>
+           <h3 class="text-2xl font-bold">Masalah: Suhu Ruangan</h3>
+           <p class="text-slate-400">"AC menyala terus padahal ruangan sudah dingin"</p>
+          </div>
+         </div>
+         <div class="flex-1 grid grid-cols-2 gap-6">
+          <div class="bg-slate-800/50 rounded-xl p-4">
+           <h4 class="font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center text-cyan-400">1</span> Sensor apa yang dibutuhkan?</h4>
+           <div class="flex flex-col gap-2"><button onclick="selectSensor(2, 'gerak')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">👋</span> Sensor Gerak (PIR) </button> <button onclick="selectSensor(2, 'suhu')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">🌡️</span> Sensor Suhu &amp; Kelembaban </button> <button onclick="selectSensor(2, 'cahaya')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">���️</span> Sensor Cahaya </button>
+           </div>
+           <p id="sensor-feedback-2" class="mt-3 text-sm hidden"></p>
+          </div>
+          <div class="bg-slate-800/50 rounded-xl p-4">
+           <h4 class="font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center text-purple-400">2</span> Aksi apa yang dilakukan sistem?</h4>
+           <div class="flex flex-col gap-2"><button onclick="selectAction(2, 'atur')" class="action-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-purple-400 transition-all"> <span class="text-xl mr-2">❄️</span> Atur suhu AC otomatis </button> <button onclick="selectAction(2, 'mati')" class="action-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-purple-400 transition-all"> <span class="text-xl mr-2">🔌</span> Matikan AC saja </button> <button onclick="selectAction(2, 'alarm')" class="action-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-purple-400 transition-all"> <span class="text-xl mr-2">🔔</span> Bunyikan alarm </button>
+           </div>
+           <p id="action-feedback-2" class="mt-3 text-sm hidden"></p>
+          </div>
+         </div>
+         <div id="solution-2" class="mt-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hidden">
+          <h4 class="font-bold text-green-400 mb-2">✅ Solusi IoT Kamu:</h4>
+          <div class="flex items-center gap-4 text-sm"><span class="px-3 py-1 bg-amber-500/20 rounded-lg" id="sol-sensor-2">📡 Sensor</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-blue-500/20 rounded-lg">🌐 Internet</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-purple-500/20 rounded-lg">🖥️ Sistem</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-green-500/20 rounded-lg" id="sol-action-2">❄️ Aksi</span>
+          </div>
+         </div>
+        </div><!-- Case 3: Keran Air -->
+        <div id="case3" class="h-full flex flex-col hidden">
+         <div class="flex items-center gap-4 mb-6">
+          <div class="w-16 h-16 rounded-xl bg-cyan-500/20 flex items-center justify-center text-4xl">
+           🚰
+          </div>
+          <div>
+           <h3 class="text-2xl font-bold">Masalah: Keran Air</h3>
+           <p class="text-slate-400">"Air sering terbuang sia-sia di toilet sekolah"</p>
+          </div>
+         </div>
+         <div class="flex-1 grid grid-cols-2 gap-6">
+          <div class="bg-slate-800/50 rounded-xl p-4">
+           <h4 class="font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center text-cyan-400">1</span> Sensor apa yang dibutuhkan?</h4>
+           <div class="flex flex-col gap-2"><button onclick="selectSensor(3, 'jarak')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">📏</span> Sensor Jarak (Ultrasonik) </button> <button onclick="selectSensor(3, 'suhu')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">🌡️</span> Sensor Suhu </button> <button onclick="selectSensor(3, 'cahaya')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">☀️</span> Sensor Cahaya </button>
+           </div>
+           <p id="sensor-feedback-3" class="mt-3 text-sm hidden"></p>
+          </div>
+          <div class="bg-slate-800/50 rounded-xl p-4">
+           <h4 class="font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center text-purple-400">2</span> Aksi apa yang dilakukan sistem?</h4>
+           <div class="flex flex-col gap-2"><button onclick="selectAction(3, 'tutup')" class="action-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-purple-400 transition-all"> <span class="text-xl mr-2">🚿</span> Buka/tutup keran otomatis </button> <button onclick="selectAction(3, 'notif')" class="action-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-purple-400 transition-all"> <span class="text-xl mr-2">📱</span> Kirim notifikasi saja </button> <button onclick="selectAction(3, 'alarm')" class="action-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-purple-400 transition-all"> <span class="text-xl mr-2">🔔</span> Bunyikan alarm </button>
+           </div>
+           <p id="action-feedback-3" class="mt-3 text-sm hidden"></p>
+          </div>
+         </div>
+         <div id="solution-3" class="mt-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hidden">
+          <h4 class="font-bold text-green-400 mb-2">✅ Solusi IoT Kamu:</h4>
+          <div class="flex items-center gap-4 text-sm"><span class="px-3 py-1 bg-amber-500/20 rounded-lg" id="sol-sensor-3">📡 Sensor</span> <span class="text-slate-500">����</span> <span class="px-3 py-1 bg-blue-500/20 rounded-lg">🌐 Internet</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-purple-500/20 rounded-lg">🖥️ Sistem</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-green-500/20 rounded-lg" id="sol-action-3">🚿 Aksi</span>
+          </div>
+         </div>
+        </div><!-- Case 4: Parkir -->
+        <div id="case4" class="h-full flex flex-col hidden">
+         <div class="flex items-center gap-4 mb-6">
+          <div class="w-16 h-16 rounded-xl bg-purple-500/20 flex items-center justify-center text-4xl">
+           🅿️
+          </div>
+          <div>
+           <h3 class="text-2xl font-bold">Masalah: Parkir Sekolah</h3>
+           <p class="text-slate-400">"Susah mencari tempat parkir yang kosong"</p>
+          </div>
+         </div>
+         <div class="flex-1 grid grid-cols-2 gap-6">
+          <div class="bg-slate-800/50 rounded-xl p-4">
+           <h4 class="font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center text-cyan-400">1</span> Sensor apa yang dibutuhkan?</h4>
+           <div class="flex flex-col gap-2"><button onclick="selectSensor(4, 'jarak')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">📏</span> Sensor Jarak (Ultrasonik) </button> <button onclick="selectSensor(4, 'suhu')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">🌡️</span> Sensor Suhu </button> <button onclick="selectSensor(4, 'gerak')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">👋</span> Sensor Gerak </button>
+           </div>
+           <p id="sensor-feedback-4" class="mt-3 text-sm hidden"></p>
+          </div>
+          <div class="bg-slate-800/50 rounded-xl p-4">
+           <h4 class="font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center text-purple-400">2</span> Aksi apa yang dilakukan sistem?</h4>
+           <div class="flex flex-col gap-2"><button onclick="selectAction(4, 'display')" class="action-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-purple-400 transition-all"> <span class="text-xl mr-2">📺</span> Tampilkan di layar info </button> <button onclick="selectAction(4, 'alarm')" class="action-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-purple-400 transition-all"> <span class="text-xl mr-2">🔔</span> Bunyikan alarm </button> <button onclick="selectAction(4, 'lampu')" class="action-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-purple-400 transition-all"> <span class="text-xl mr-2">💡</span> Nyalakan lampu indikator </button>
+           </div>
+           <p id="action-feedback-4" class="mt-3 text-sm hidden"></p>
+          </div>
+         </div>
+         <div id="solution-4" class="mt-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hidden">
+          <h4 class="font-bold text-green-400 mb-2">✅ Solusi IoT Kamu:</h4>
+          <div class="flex items-center gap-4 text-sm"><span class="px-3 py-1 bg-amber-500/20 rounded-lg" id="sol-sensor-4">📡 Sensor</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-blue-500/20 rounded-lg">🌐 Internet</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-purple-500/20 rounded-lg">🖥️ Sistem</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-green-500/20 rounded-lg" id="sol-action-4">📺 Aksi</span>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
      </div>
-    </div>
-   </div>
-   <div class="action-section"><button class="action-btn success" id="test-btn"> <span>🧪</span> <span id="button-uji">Uji Solusi</span> </button> <button class="action-btn warning" id="improve-btn"> <span>💡</span> <span id="button-perbaiki">Perbaiki</span> </button> <button class="action-btn" id="reset-btn"> <span>🔄</span> <span id="button-reset">Reset</span> </button>
-   </div>
+    </section>
+   </main>
   </div>
   <script>
+    // Default configuration
     const defaultConfig = {
-      judul_utama: "🎯 Rancang Solusi Digital Sederhana",
-      masalah_text: '"Sering lupa tugas dan jadwal kegiatan"',
-      button_uji: "Uji Solusi",
-      button_perbaiki: "Perbaiki",
-      button_reset: "Reset",
-      background_color: "#667eea",
-      surface_color: "#ffffff",
-      text_color: "#333333",
-      primary_action_color: "#10b981",
-      secondary_action_color: "#f59e0b"
+      main_title: 'Perancangan Solusi Digital Berbasis IoT',
+      subject_info: 'Koding & AI | Kelas 9 SMP'
     };
 
-    let draggedElement = null;
-    let addedFeatures = [];
+    let config = { ...defaultConfig };
 
-    const featureData = {
-      schedule: { icon: "📅", text: "Tambah Jadwal" },
-      reminder: { icon: "⏰", text: "Pengingat Waktu" },
-      notification: { icon: "🔔", text: "Notifikasi" },
-      tasklist: { icon: "✅", text: "Daftar Tugas" }
+    // State management
+    let currentStep = 1;
+    let q1Answered = false;
+    let q2Answered = false;
+    let simulationRun = false;
+    let dragDropComplete = false;
+    let currentCase = 1;
+    let caseAnswers = {
+      1: { sensor: null, action: null },
+      2: { sensor: null, action: null },
+      3: { sensor: null, action: null },
+      4: { sensor: null, action: null }
+    };
+    
+    // Correct answers for cases
+    const correctAnswers = {
+      1: { sensor: 'gerak', action: 'mati' },
+      2: { sensor: 'suhu', action: 'atur' },
+      3: { sensor: 'jarak', action: 'tutup' },
+      4: { sensor: 'jarak', action: 'display' }
     };
 
-    function setupDragAndDrop() {
-      const featureItems = document.querySelectorAll('.feature-item');
-      const mockupContainer = document.getElementById('mockup-container');
-
-      featureItems.forEach(item => {
-        item.addEventListener('dragstart', (e) => {
-          draggedElement = e.target;
-          e.target.classList.add('dragging');
-        });
-
-        item.addEventListener('dragend', (e) => {
-          e.target.classList.remove('dragging');
-        });
-      });
-
-      mockupContainer.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        mockupContainer.classList.add('drag-over');
-      });
-
-      mockupContainer.addEventListener('dragleave', () => {
-        mockupContainer.classList.remove('drag-over');
-      });
-
-      mockupContainer.addEventListener('drop', (e) => {
-        e.preventDefault();
-        mockupContainer.classList.remove('drag-over');
-        
-        if (draggedElement) {
-          const featureId = draggedElement.getAttribute('data-feature');
-          addFeatureToMockup(featureId);
-        }
-      });
-    }
-
-    function addFeatureToMockup(featureId) {
-      if (addedFeatures.includes(featureId)) {
-        return;
-      }
-
-      addedFeatures.push(featureId);
-      const feature = featureData[featureId];
-      
-      const mockupEmpty = document.getElementById('mockup-empty');
-      if (mockupEmpty) {
-        mockupEmpty.style.display = 'none';
-      }
-
-      const codeBlock = document.createElement('div');
-      codeBlock.className = 'code-block';
-      codeBlock.setAttribute('data-feature-id', featureId);
-      
-      codeBlock.innerHTML = `
-        <div class="code-block-content">
-          <span class="code-block-icon">${feature.icon}</span>
-          <span class="code-block-text">${feature.text}</span>
-        </div>
-        <button class="remove-btn">Hapus</button>
-      `;
-
-      const removeBtn = codeBlock.querySelector('.remove-btn');
-      removeBtn.addEventListener('click', () => {
-        removeFeature(featureId, codeBlock);
-      });
-
-      document.getElementById('mockup-container').appendChild(codeBlock);
-      hideFeedback();
-    }
-
-    function removeFeature(featureId, element) {
-      addedFeatures = addedFeatures.filter(id => id !== featureId);
-      element.remove();
-
-      if (addedFeatures.length === 0) {
-        const mockupEmpty = document.getElementById('mockup-empty');
-        if (mockupEmpty) {
-          mockupEmpty.style.display = 'block';
-        }
-      }
-      hideFeedback();
-    }
-
-    function testSolution() {
-      const feedbackMessage = document.getElementById('feedback-message');
-      const feedbackTitle = document.getElementById('feedback-title');
-      const feedbackText = document.getElementById('feedback-text');
-
-      if (addedFeatures.length === 0) {
-        feedbackTitle.textContent = "⚠️ Solusi Belum Lengkap";
-        feedbackText.textContent = "Belum ada fitur yang ditambahkan. Silakan seret fitur dari panel kiri untuk mulai merancang solusi Anda!";
-        showFeedback();
-        return;
-      }
-
-      const hasSchedule = addedFeatures.includes('schedule');
-      const hasReminder = addedFeatures.includes('reminder');
-      const hasNotification = addedFeatures.includes('notification');
-      const hasTasklist = addedFeatures.includes('tasklist');
-
-      let feedback = "";
-      let title = "";
-
-      if (addedFeatures.length >= 3 && hasSchedule && (hasReminder || hasNotification)) {
-        title = "✅ Solusi Sangat Baik!";
-        feedback = "Hebat! Solusi Anda mencakup fitur-fitur penting untuk mengatasi masalah lupa jadwal. Kombinasi jadwal, pengingat, dan notifikasi akan membantu pengguna tetap terorganisir.";
-      } else if (addedFeatures.length >= 2 && hasSchedule) {
-        title = "👍 Solusi Cukup Baik";
-        feedback = "Bagus! Anda sudah menambahkan fitur jadwal yang merupakan inti dari solusi. Pertimbangkan untuk menambahkan pengingat waktu atau notifikasi agar lebih efektif.";
-      } else {
-        title = "💡 Perlu Perbaikan";
-        feedback = "Solusi Anda masih bisa ditingkatkan. Untuk mengatasi masalah 'sering lupa', minimal diperlukan fitur Tambah Jadwal dan Pengingat Waktu atau Notifikasi.";
-      }
-
-      feedbackTitle.textContent = title;
-      feedbackText.textContent = feedback;
-      showFeedback();
-    }
-
-    function improveSolution() {
-      const feedbackMessage = document.getElementById('feedback-message');
-      const feedbackTitle = document.getElementById('feedback-title');
-      const feedbackText = document.getElementById('feedback-text');
-
-      feedbackTitle.textContent = "💡 Saran Perbaikan";
-      
-      let suggestions = "Saran untuk meningkatkan solusi Anda:\n\n";
-      
-      if (!addedFeatures.includes('schedule')) {
-        suggestions += "• Tambahkan fitur 'Tambah Jadwal' sebagai fondasi aplikasi\n";
-      }
-      if (!addedFeatures.includes('reminder')) {
-        suggestions += "• Tambahkan 'Pengingat Waktu' agar pengguna mendapat notifikasi tepat waktu\n";
-      }
-      if (!addedFeatures.includes('notification')) {
-        suggestions += "• Tambahkan 'Notifikasi' untuk memberi tahu pengguna tentang kegiatan\n";
-      }
-      if (!addedFeatures.includes('tasklist')) {
-        suggestions += "• Tambahkan 'Daftar Tugas' untuk mencatat semua hal yang perlu dilakukan\n";
-      }
-
-      if (addedFeatures.length === 4) {
-        suggestions = "Solusi Anda sudah sangat lengkap! Semua fitur sudah ditambahkan. Pertimbangkan untuk menguji apakah semua fitur ini benar-benar dibutuhkan atau ada yang bisa disederhanakan.";
-      }
-
-      feedbackText.textContent = suggestions;
-      showFeedback();
-    }
-
-    function resetSolution() {
-      addedFeatures = [];
-      const mockupContainer = document.getElementById('mockup-container');
-      const codeBlocks = mockupContainer.querySelectorAll('.code-block');
-      codeBlocks.forEach(block => block.remove());
-
-      const mockupEmpty = document.getElementById('mockup-empty');
-      if (mockupEmpty) {
-        mockupEmpty.style.display = 'block';
-      }
-
-      hideFeedback();
-    }
-
-    function showFeedback() {
-      const feedbackMessage = document.getElementById('feedback-message');
-      feedbackMessage.classList.add('show');
-    }
-
-    function hideFeedback() {
-      const feedbackMessage = document.getElementById('feedback-message');
-      feedbackMessage.classList.remove('show');
-    }
-
-    document.getElementById('test-btn').addEventListener('click', testSolution);
-    document.getElementById('improve-btn').addEventListener('click', improveSolution);
-    document.getElementById('reset-btn').addEventListener('click', resetSolution);
-
-    async function onConfigChange(config) {
-      document.getElementById('judul-utama').textContent = config.judul_utama || defaultConfig.judul_utama;
-      document.getElementById('masalah-text').textContent = config.masalah_text || defaultConfig.masalah_text;
-      document.getElementById('button-uji').textContent = config.button_uji || defaultConfig.button_uji;
-      document.getElementById('button-perbaiki').textContent = config.button_perbaiki || defaultConfig.button_perbaiki;
-      document.getElementById('button-reset').textContent = config.button_reset || defaultConfig.button_reset;
-
-      const backgroundColor = config.background_color || defaultConfig.background_color;
-      const surfaceColor = config.surface_color || defaultConfig.surface_color;
-      const textColor = config.text_color || defaultConfig.text_color;
-      const primaryActionColor = config.primary_action_color || defaultConfig.primary_action_color;
-      const secondaryActionColor = config.secondary_action_color || defaultConfig.secondary_action_color;
-
-      document.querySelector('.app-container').style.background = `linear-gradient(135deg, ${backgroundColor} 0%, #764ba2 100%)`;
-      document.querySelector('.design-area').style.background = `rgba(255, 255, 255, 0.95)`;
-      document.querySelector('.design-area').style.color = textColor;
-      
-      const successBtn = document.querySelector('.action-btn.success');
-      successBtn.style.background = primaryActionColor;
-      
-      const warningBtn = document.querySelector('.action-btn.warning');
-      warningBtn.style.background = secondaryActionColor;
-    }
-
+    // Initialize Element SDK
     if (window.elementSdk) {
       window.elementSdk.init({
         defaultConfig,
-        onConfigChange,
+        onConfigChange: async (newConfig) => {
+          config = { ...newConfig };
+          document.getElementById('main-title').textContent = config.main_title || defaultConfig.main_title;
+          document.getElementById('subject-info').textContent = config.subject_info || defaultConfig.subject_info;
+        },
         mapToCapabilities: (config) => ({
-          recolorables: [
-            {
-              get: () => config.background_color || defaultConfig.background_color,
-              set: (value) => {
-                config.background_color = value;
-                window.elementSdk.setConfig({ background_color: value });
-              }
-            },
-            {
-              get: () => config.surface_color || defaultConfig.surface_color,
-              set: (value) => {
-                config.surface_color = value;
-                window.elementSdk.setConfig({ surface_color: value });
-              }
-            },
-            {
-              get: () => config.text_color || defaultConfig.text_color,
-              set: (value) => {
-                config.text_color = value;
-                window.elementSdk.setConfig({ text_color: value });
-              }
-            },
-            {
-              get: () => config.primary_action_color || defaultConfig.primary_action_color,
-              set: (value) => {
-                config.primary_action_color = value;
-                window.elementSdk.setConfig({ primary_action_color: value });
-              }
-            },
-            {
-              get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
-              set: (value) => {
-                config.secondary_action_color = value;
-                window.elementSdk.setConfig({ secondary_action_color: value });
-              }
-            }
-          ],
+          recolorables: [],
           borderables: [],
           fontEditable: undefined,
           fontSizeable: undefined
         }),
         mapToEditPanelValues: (config) => new Map([
-          ["judul_utama", config.judul_utama || defaultConfig.judul_utama],
-          ["masalah_text", config.masalah_text || defaultConfig.masalah_text],
-          ["button_uji", config.button_uji || defaultConfig.button_uji],
-          ["button_perbaiki", config.button_perbaiki || defaultConfig.button_perbaiki],
-          ["button_reset", config.button_reset || defaultConfig.button_reset]
+          ['main_title', config.main_title || defaultConfig.main_title],
+          ['subject_info', config.subject_info || defaultConfig.subject_info]
         ])
       });
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      setupDragAndDrop();
-    });
+    // Step 1: Simulation
+    function runSimulation() {
+      if (simulationRun) return;
+      simulationRun = true;
+      
+      const person = document.getElementById('person');
+      const lampBulb = document.getElementById('lamp-bulb');
+      const lampGlow = document.getElementById('lamp-glow');
+      const sensorBeam = document.getElementById('sensor-beam');
+      const sensorLight = document.getElementById('sensor-light');
+      const simButton = document.getElementById('simButton');
+      
+      simButton.textContent = '🔄 Menjalankan...';
+      simButton.disabled = true;
+      
+      // Person walks from door to under sensor
+      person.style.transform = 'translate(350, 150)';
+      
+      // After person enters, sensor detects
+      setTimeout(() => {
+        sensorBeam.classList.add('active');
+        sensorLight.style.fill = '#22c55e';
+      }, 1000);
+      
+      // Lamp turns on
+      setTimeout(() => {
+        lampBulb.classList.add('on');
+        lampGlow.style.opacity = '1';
+      }, 1500);
+      
+      setTimeout(() => {
+        simButton.innerHTML = `
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          Ulangi Simulasi
+        `;
+        simButton.disabled = false;
+        simButton.onclick = resetSimulation;
+      }, 2000);
+    }
+    
+    function resetSimulation() {
+      const person = document.getElementById('person');
+      const lampBulb = document.getElementById('lamp-bulb');
+      const lampGlow = document.getElementById('lamp-glow');
+      const sensorBeam = document.getElementById('sensor-beam');
+      const sensorLight = document.getElementById('sensor-light');
+      const simButton = document.getElementById('simButton');
+      
+      person.style.transform = 'translate(450, 150)';
+      lampBulb.classList.remove('on');
+      lampGlow.style.opacity = '0';
+      sensorBeam.classList.remove('active');
+      sensorLight.style.fill = '#38bdf8';
+      
+      simButton.innerHTML = `
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Jalankan Simulasi
+      `;
+      simButton.onclick = runSimulation;
+      simulationRun = false;
+    }
 
-    setupDragAndDrop();
+    // Step 1: Questions
+    function answerQ1(answer) {
+      if (q1Answered) return;
+      q1Answered = true;
+      
+      const buttons = document.querySelectorAll('#q1 .option-btn');
+      buttons.forEach(btn => {
+        if (btn.textContent.includes(answer === 'ya' ? 'Ya' : 'Tidak')) {
+          btn.classList.add('selected');
+        }
+      });
+      
+      const feedback = document.getElementById('q1-feedback');
+      feedback.classList.remove('hidden');
+      
+      if (answer === 'ya') {
+        feedback.innerHTML = '✅ <span class="text-green-400">Benar!</span> Lampu ini memang "pintar" karena bisa bereaksi otomatis.';
+      } else {
+        feedback.innerHTML = '🤔 <span class="text-amber-400">Hmm...</span> Coba pikirkan lagi, lampu ini bisa menyala sendiri tanpa disentuh!';
+      }
+      
+      // Enable Q2
+      document.getElementById('q2').classList.remove('opacity-50');
+      checkStep1Complete();
+    }
+    
+    function answerQ2(answer) {
+      if (q2Answered) return;
+      q2Answered = true;
+      
+      const buttons = document.querySelectorAll('#q2 .option-btn');
+      buttons.forEach(btn => {
+        if ((answer === 'sensor' && btn.textContent.includes('Sensor')) ||
+            (answer === 'sihir' && btn.textContent.includes('Sihir')) ||
+            (answer === 'manual' && btn.textContent.includes('manual'))) {
+          btn.classList.add('selected');
+        }
+      });
+      
+      const feedback = document.getElementById('q2-feedback');
+      feedback.classList.remove('hidden');
+      
+      if (answer === 'sensor') {
+        feedback.innerHTML = '🎉 <span class="text-green-400">Tepat sekali!</span> Sensor mendeteksi kehadiranmu dan mengirim sinyal untuk menyalakan lampu. Ini adalah dasar dari <strong>IoT (Internet of Things)</strong>!';
+      } else if (answer === 'sihir') {
+        feedback.innerHTML = '😄 <span class="text-amber-400">Bukan sihir kok!</span> Ada teknologi sensor yang mendeteksi gerakan. Ini namanya <strong>IoT</strong>!';
+      } else {
+        feedback.innerHTML = '🤔 <span class="text-amber-400">Tidak juga...</span> Lihat lagi simulasinya, lampu menyala tanpa ada yang menyentuh saklar!';
+      }
+      
+      checkStep1Complete();
+    }
+    
+    function checkStep1Complete() {
+      if (q1Answered && q2Answered) {
+        const nextBtn = document.getElementById('nextStep1');
+        nextBtn.classList.remove('opacity-50', 'pointer-events-none');
+        document.querySelector('[data-step="1"]').classList.add('completed');
+      }
+    }
+
+    // Step Navigation
+    function goToStep(step) {
+      document.getElementById(`step${currentStep}`).classList.add('hidden');
+      document.getElementById(`step${step}`).classList.remove('hidden');
+      
+      document.querySelectorAll('.step-indicator').forEach(ind => {
+        ind.classList.remove('active');
+      });
+      document.querySelector(`[data-step="${step}"]`).classList.add('active');
+      
+      currentStep = step;
+      
+      if (step === 2) {
+        initDragDrop();
+      }
+    }
+
+    // Step 2: Drag and Drop
+    let draggedItem = null;
+    let placedItems = {};
+
+    function initDragDrop() {
+      const dragItems = document.querySelectorAll('.drag-item');
+      const dropZones = document.querySelectorAll('.drop-zone');
+      
+      dragItems.forEach(item => {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
+      });
+      
+      dropZones.forEach(zone => {
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('dragleave', handleDragLeave);
+        zone.addEventListener('drop', handleDrop);
+      });
+    }
+    
+    function handleDragStart(e) {
+      draggedItem = e.target;
+      e.target.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+    
+    function handleDragEnd(e) {
+      e.target.classList.remove('dragging');
+      draggedItem = null;
+    }
+    
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.currentTarget.classList.add('drag-over');
+    }
+    
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+    
+    function handleDrop(e) {
+      e.preventDefault();
+      const zone = e.currentTarget;
+      zone.classList.remove('drag-over');
+      
+      if (!draggedItem) return;
+      
+      const itemType = draggedItem.dataset.item;
+      const expected = zone.dataset.expected;
+      const order = zone.dataset.order;
+      
+      // Remove previous item from this zone if any
+      const existingItem = zone.querySelector('.drag-item');
+      if (existingItem) {
+        document.getElementById('drag-container').appendChild(existingItem);
+        delete placedItems[order];
+      }
+      
+      // Place new item
+      zone.innerHTML = '';
+      zone.appendChild(draggedItem.cloneNode(true));
+      draggedItem.style.display = 'none';
+      placedItems[order] = itemType;
+      
+      // Check if correct
+      if (itemType === expected) {
+        zone.classList.add('correct');
+      }
+      
+      checkDragDropComplete();
+    }
+    
+    function checkDragDropComplete() {
+      const allCorrect = Object.keys(placedItems).length === 4 &&
+        placedItems['1'] === 'sensor' &&
+        placedItems['2'] === 'internet' &&
+        placedItems['3'] === 'sistem' &&
+        placedItems['4'] === 'aksi';
+      
+      if (allCorrect && !dragDropComplete) {
+        dragDropComplete = true;
+        document.getElementById('drag-feedback').classList.remove('hidden');
+        document.getElementById('nextStep2').classList.remove('opacity-50', 'pointer-events-none');
+        document.querySelector('[data-step="2"]').classList.add('completed');
+      }
+    }
+    
+    function resetDragDrop() {
+      placedItems = {};
+      dragDropComplete = false;
+      
+      const dragContainer = document.getElementById('drag-container');
+      const items = document.querySelectorAll('.drag-item');
+      items.forEach(item => {
+        item.style.display = '';
+        if (!dragContainer.contains(item)) {
+          dragContainer.appendChild(item);
+        }
+      });
+      
+      const dropZones = document.querySelectorAll('.drop-zone');
+      dropZones.forEach(zone => {
+        zone.classList.remove('correct');
+        const order = zone.dataset.order;
+        const labels = ['Input', 'Koneksi', 'Proses', 'Output'];
+        zone.innerHTML = `
+          <span class="text-4xl mb-1 text-slate-600">${order}️⃣</span>
+          <span class="text-xs text-slate-500">${labels[order-1]}</span>
+        `;
+      });
+      
+      document.getElementById('drag-feedback').classList.add('hidden');
+      document.getElementById('nextStep2').classList.add('opacity-50', 'pointer-events-none');
+    }
+
+    // Step 3: Case Studies
+    function selectCase(caseNum) {
+      document.querySelectorAll('.case-card').forEach(card => card.classList.remove('active'));
+      document.querySelectorAll('.case-card')[caseNum - 1].classList.add('active');
+      
+      document.querySelectorAll('[id^="case"]').forEach(c => {
+        c.classList.add('hidden');
+        c.classList.remove('flex');
+      });
+      
+      const caseEl = document.getElementById(`case${caseNum}`);
+      caseEl.classList.remove('hidden');
+      caseEl.classList.add('flex');
+      
+      currentCase = caseNum;
+    }
+    
+    function selectSensor(caseNum, sensor) {
+      if (caseAnswers[caseNum].sensor) return;
+      
+      caseAnswers[caseNum].sensor = sensor;
+      const correct = correctAnswers[caseNum].sensor;
+      const feedback = document.getElementById(`sensor-feedback-${caseNum}`);
+      
+      const buttons = document.querySelectorAll(`#case${caseNum} .sensor-option`);
+      buttons.forEach(btn => {
+        if ((sensor === 'gerak' && btn.textContent.includes('Gerak')) ||
+            (sensor === 'suhu' && btn.textContent.includes('Suhu')) ||
+            (sensor === 'cahaya' && btn.textContent.includes('Cahaya')) ||
+            (sensor === 'jarak' && btn.textContent.includes('Jarak'))) {
+          btn.classList.add('bg-cyan-500/20', 'border-cyan-400');
+        }
+      });
+      
+      feedback.classList.remove('hidden');
+      if (sensor === correct) {
+        feedback.innerHTML = '✅ <span class="text-green-400">Pilihan tepat!</span>';
+      } else {
+        feedback.innerHTML = '���� <span class="text-amber-400">Bisa jadi, tapi ada pilihan yang lebih tepat.</span>';
+      }
+      
+      updateSolutionDisplay(caseNum);
+    }
+    
+    function selectAction(caseNum, action) {
+      if (caseAnswers[caseNum].action) return;
+      
+      caseAnswers[caseNum].action = action;
+      const correct = correctAnswers[caseNum].action;
+      const feedback = document.getElementById(`action-feedback-${caseNum}`);
+      
+      const buttons = document.querySelectorAll(`#case${caseNum} .action-option`);
+      buttons.forEach(btn => {
+        if ((action === 'mati' && btn.textContent.includes('Matikan')) ||
+            (action === 'notif' && btn.textContent.includes('notifikasi')) ||
+            (action === 'alarm' && btn.textContent.includes('alarm')) ||
+            (action === 'atur' && btn.textContent.includes('Atur')) ||
+            (action === 'tutup' && btn.textContent.includes('keran')) ||
+            (action === 'display' && btn.textContent.includes('layar')) ||
+            (action === 'lampu' && btn.textContent.includes('lampu'))) {
+          btn.classList.add('bg-purple-500/20', 'border-purple-400');
+        }
+      });
+      
+      feedback.classList.remove('hidden');
+      if (action === correct) {
+        feedback.innerHTML = '✅ <span class="text-green-400">Solusi yang efektif!</span>';
+      } else {
+        feedback.innerHTML = '🤔 <span class="text-amber-400">Bisa, tapi ada cara yang lebih efektif.</span>';
+      }
+      
+      updateSolutionDisplay(caseNum);
+    }
+    
+    function updateSolutionDisplay(caseNum) {
+      if (caseAnswers[caseNum].sensor && caseAnswers[caseNum].action) {
+        const solution = document.getElementById(`solution-${caseNum}`);
+        solution.classList.remove('hidden');
+        
+        const sensorLabels = {
+          gerak: '👋 Sensor Gerak',
+          suhu: '🌡️ Sensor Suhu',
+          cahaya: '☀️ Sensor Cahaya',
+          jarak: '📏 Sensor Jarak'
+        };
+        
+        const actionLabels = {
+          mati: '🔌 Matikan Otomatis',
+          notif: '📱 Notifikasi',
+          alarm: '🔔 Alarm',
+          atur: '❄️ Atur AC',
+          tutup: '🚿 Buka/Tutup Keran',
+          display: '📺 Tampilkan Info',
+          lampu: '💡 Lampu Indikator'
+        };
+        
+        document.getElementById(`sol-sensor-${caseNum}`).textContent = sensorLabels[caseAnswers[caseNum].sensor];
+        document.getElementById(`sol-action-${caseNum}`).textContent = actionLabels[caseAnswers[caseNum].action];
+      }
+    }
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bb84c4c56c0a2f5',t:'MTc2ODAwNzQ2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c1fe50560e9b15c',t:'MTc2OTA5Mzc1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
