@@ -155,6 +155,25 @@
       border-color: #38bdf8;
       box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
     }
+
+    /* Custom scrollbar */
+    .overflow-y-auto::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .overflow-y-auto::-webkit-scrollbar-track {
+      background: rgba(51, 65, 85, 0.3);
+      border-radius: 4px;
+    }
+    
+    .overflow-y-auto::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.5);
+      border-radius: 4px;
+    }
+    
+    .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+      background: rgba(56, 189, 248, 0.7);
+    }
   </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
@@ -192,11 +211,11 @@
          <rect x="0" y="0" width="30" height="20" fill="#334155" stroke="#38bdf8" stroke-width="1" rx="3" />
          <circle cx="15" cy="10" r="5" fill="#38bdf8" id="sensor-light" />
          <path id="sensor-beam" class="sensor-beam" d="M15 25 L-30 140 L60 140 Z" fill="url(#sensorGradient)" />
-        </g> <!-- Person --> <g id="person" transform="translate(450, 150)" style="transition: transform 1s ease">
-         <circle cx="0" cy="-20" r="15" fill="#f59e0b" />
-         <rect x="-12" y="0" width="24" height="35" fill="#3b82f6" rx="5" />
-         <rect x="-15" y="35" width="10" height="25" fill="#1e40af" rx="3" />
-         <rect x="5" y="35" width="10" height="25" fill="#1e40af" rx="3" />
+        </g> <!-- Person --> <g id="person">
+         <circle cx="350" cy="150" r="15" fill="#f59e0b" />
+         <rect x="338" y="170" width="24" height="35" fill="#3b82f6" rx="5" />
+         <rect x="335" y="205" width="10" height="25" fill="#1e40af" rx="3" />
+         <rect x="355" y="205" width="10" height="25" fill="#1e40af" rx="3" />
         </g> <!-- Gradients --> <defs>
          <radialgradient id="lampGradient">
           <stop offset="0%" stop-color="#facc15" stop-opacity="0.6" />
@@ -215,15 +234,15 @@
      <div class="w-96 glow-card rounded-2xl p-6 flex flex-col">
       <div class="flex items-center gap-2 mb-4"><span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-semibold">PERTANYAAN</span>
       </div>
-      <h3 class="text-xl font-bold mb-6">🤔 Ayo Berpikir!</h3>
-      <div class="flex-1 flex flex-col gap-4"><!-- Question 1 -->
-       <div id="q1" class="p-4 bg-slate-800/50 rounded-xl">
+      <h3 class="text-xl font-bold mb-6">Ayo Berpikir!</h3>
+      <div class="flex-1 flex flex-col gap-4 overflow-y-auto pr-2" style="max-height: calc(100% - 120px);"><!-- Question 1 -->
+       <div id="q1" class="p-4 bg-slate-800/50 rounded-xl flex-shrink-0">
         <p class="text-sm text-slate-300 mb-3">Apakah lampu ini "pintar"?</p>
-        <div class="flex gap-2"><button onclick="answerQ1('ya')" class="option-btn flex-1 py-2 px-4 border-2 border-slate-600 rounded-lg text-sm font-medium hover:border-cyan-400">✅ Ya</button> <button onclick="answerQ1('tidak')" class="option-btn flex-1 py-2 px-4 border-2 border-slate-600 rounded-lg text-sm font-medium hover:border-cyan-400">��� Tidak</button>
+        <div class="flex gap-2"><button onclick="answerQ1('ya')" class="option-btn flex-1 py-2 px-4 border-2 border-slate-600 rounded-lg text-sm font-medium hover:border-cyan-400">✅ Ya</button> <button onclick="answerQ1('tidak')" class="option-btn flex-1 py-2 px-4 border-2 border-slate-600 rounded-lg text-sm font-medium hover:border-cyan-400">❌ Tidak</button>
         </div>
         <p id="q1-feedback" class="mt-3 text-sm hidden"></p>
        </div><!-- Question 2 -->
-       <div id="q2" class="p-4 bg-slate-800/50 rounded-xl opacity-50">
+       <div id="q2" class="p-4 bg-slate-800/50 rounded-xl opacity-50 flex-shrink-0">
         <p class="text-sm text-slate-300 mb-3">Apa yang membuat lampu bisa bereaksi?</p>
         <div class="flex flex-col gap-2"><button onclick="answerQ2('sensor')" class="option-btn py-2 px-4 border-2 border-slate-600 rounded-lg text-sm font-medium text-left hover:border-cyan-400">📡 Sensor mendeteksi gerakan</button> <button onclick="answerQ2('sihir')" class="option-btn py-2 px-4 border-2 border-slate-600 rounded-lg text-sm font-medium text-left hover:border-cyan-400">✨ Sihir / Keajaiban</button> <button onclick="answerQ2('manual')" class="option-btn py-2 px-4 border-2 border-slate-600 rounded-lg text-sm font-medium text-left hover:border-cyan-400">👆 Dinyalakan manual</button>
         </div>
@@ -246,7 +265,7 @@
        <div class="flex justify-center gap-4 flex-wrap" id="drag-container">
         <div class="drag-item px-6 py-4 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-2 border-amber-500 rounded-xl cursor-grab" draggable="true" data-item="sensor">
          <div class="text-3xl mb-2">
-          📡
+          👋
          </div>
          <div class="font-semibold">
           Sensor Gerak
@@ -291,33 +310,23 @@
        </div><!-- Drop Zones -->
        <div class="flex-1 flex items-center justify-center">
         <div class="flex items-center gap-2">
-         <div class="drop-zone w-36 h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center" data-order="1" data-expected="sensor"><span class="text-4xl mb-1 text-slate-600">1️⃣</span> <span class="text-xs text-slate-500">Input</span>
+         <div class="drop-zone w-36 h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center" data-order="1" data-expected="sensor"><span class="text-4xl mb-1 text-slate-600">1</span> <span class="text-xs text-slate-500">Input</span>
          </div>
          <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
          </svg>
-         <div class="drop-zone w-36 h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center" data-order="2" data-expected="internet"><span class="text-4xl mb-1 text-slate-600">2️⃣</span> <span class="text-xs text-slate-500">Koneksi</span>
+         <div class="drop-zone w-36 h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center" data-order="2" data-expected="internet"><span class="text-4xl mb-1 text-slate-600">2</span> <span class="text-xs text-slate-500">Koneksi</span>
          </div>
          <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
          </svg>
-         <div class="drop-zone w-36 h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center" data-order="3" data-expected="sistem"><span class="text-4xl mb-1 text-slate-600">3️⃣</span> <span class="text-xs text-slate-500">Proses</span>
+         <div class="drop-zone w-36 h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center" data-order="3" data-expected="sistem"><span class="text-4xl mb-1 text-slate-600">3</span> <span class="text-xs text-slate-500">Proses</span>
          </div>
          <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
          </svg>
-         <div class="drop-zone w-36 h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center" data-order="4" data-expected="aksi"><span class="text-4xl mb-1 text-slate-600">4️⃣</span> <span class="text-xs text-slate-500">Output</span>
+         <div class="drop-zone w-36 h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center" data-order="4" data-expected="aksi"><span class="text-4xl mb-1 text-slate-600">4</span> <span class="text-xs text-slate-500">Output</span>
          </div>
         </div>
        </div><!-- Feedback -->
-       <div id="drag-feedback" class="text-center py-4 hidden">
-        <div class="success-popup inline-flex items-center gap-3 px-6 py-3 bg-green-500/20 border border-green-500 rounded-xl"><span class="text-3xl">🎉</span>
-         <div class="text-left">
-          <div class="font-bold text-green-400">
-           Hebat! Urutan Benar!
-          </div>
-          <div class="text-sm text-slate-300">
-           Sensor → Internet → Sistem → Aksi
-          </div>
-         </div>
-        </div>
+       <div id="drag-feedback" class="text-center hidden">
        </div>
       </div><!-- Navigation -->
       <div class="flex justify-between mt-4"><button onclick="goToStep(1)" class="px-6 py-3 bg-slate-700 rounded-xl font-semibold flex items-center gap-2 hover:bg-slate-600 transition-colors">
@@ -375,8 +384,8 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
         </svg> Kembali </button>
       </div><!-- Case Details -->
-      <div class="flex-1 glow-card rounded-2xl p-6 flex flex-col">
-       <div id="case-content"><!-- Case 1: Lampu Kelas -->
+      <div class="flex-1 glow-card rounded-2xl p-6 flex flex-col overflow-hidden">
+       <div id="case-content" class="flex-1 overflow-y-auto pr-2" style="max-height: calc(100% - 20px);"><!-- Case 1: Lampu Kelas -->
         <div id="case1" class="h-full flex flex-col">
          <div class="flex items-center gap-4 mb-6">
           <div class="w-16 h-16 rounded-xl bg-yellow-500/20 flex items-center justify-center text-4xl">
@@ -387,7 +396,7 @@
            <p class="text-slate-400">"Lampu kelas sering lupa dimatikan saat istirahat"</p>
           </div>
          </div>
-         <div class="flex-1 grid grid-cols-2 gap-6"><!-- Sensor Selection -->
+         <div class="grid grid-cols-2 gap-6"><!-- Sensor Selection -->
           <div class="bg-slate-800/50 rounded-xl p-4">
            <h4 class="font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center text-cyan-400">1</span> Sensor apa yang dibutuhkan?</h4>
            <div class="flex flex-col gap-2"><button onclick="selectSensor(1, 'gerak')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">👋</span> Sensor Gerak (PIR) </button> <button onclick="selectSensor(1, 'suhu')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">🌡️</span> Sensor Suhu </button> <button onclick="selectSensor(1, 'cahaya')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">☀️</span> Sensor Cahaya (LDR) </button>
@@ -401,13 +410,13 @@
            <p id="action-feedback-1" class="mt-3 text-sm hidden"></p>
           </div>
          </div><!-- Solution Summary -->
-         <div id="solution-1" class="mt-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hidden">
-          <h4 class="font-bold text-green-400 mb-2">✅ Solusi IoT Kamu:</h4>
-          <div class="flex items-center gap-4 text-sm"><span class="px-3 py-1 bg-amber-500/20 rounded-lg" id="sol-sensor-1">📡 Sensor</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-blue-500/20 rounded-lg">🌐 Internet</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-purple-500/20 rounded-lg">🖥️ Sistem</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-green-500/20 rounded-lg" id="sol-action-1">💡 Aksi</span>
+         <div id="solution-1" class="p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hidden">
+          <h4 class="font-bold text-green-400 mb-2 text-sm">✅ Solusi IoT Kamu:</h4>
+          <div class="flex items-center gap-2 text-xs flex-wrap"><span class="px-2 py-1 bg-amber-500/20 rounded-lg" id="sol-sensor-1">📡 Sensor</span> <span class="text-slate-500">→</span> <span class="px-2 py-1 bg-blue-500/20 rounded-lg">🌐 Internet</span> <span class="text-slate-500">→</span> <span class="px-2 py-1 bg-purple-500/20 rounded-lg">🖥️ Sistem</span> <span class="text-slate-500">→</span> <span class="px-2 py-1 bg-green-500/20 rounded-lg" id="sol-action-1">💡 Aksi</span>
           </div>
          </div>
         </div><!-- Case 2: Suhu Ruangan -->
-        <div id="case2" class="h-full flex flex-col hidden">
+        <div id="case2" class="h-full flex-col hidden">
          <div class="flex items-center gap-4 mb-6">
           <div class="w-16 h-16 rounded-xl bg-blue-500/20 flex items-center justify-center text-4xl">
            🌡️
@@ -417,10 +426,10 @@
            <p class="text-slate-400">"AC menyala terus padahal ruangan sudah dingin"</p>
           </div>
          </div>
-         <div class="flex-1 grid grid-cols-2 gap-6">
+         <div class="grid grid-cols-2 gap-6">
           <div class="bg-slate-800/50 rounded-xl p-4">
            <h4 class="font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center text-cyan-400">1</span> Sensor apa yang dibutuhkan?</h4>
-           <div class="flex flex-col gap-2"><button onclick="selectSensor(2, 'gerak')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">👋</span> Sensor Gerak (PIR) </button> <button onclick="selectSensor(2, 'suhu')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">🌡️</span> Sensor Suhu &amp; Kelembaban </button> <button onclick="selectSensor(2, 'cahaya')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">���️</span> Sensor Cahaya </button>
+           <div class="flex flex-col gap-2"><button onclick="selectSensor(2, 'gerak')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">👋</span> Sensor Gerak (PIR) </button> <button onclick="selectSensor(2, 'suhu')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">🌡️</span> Sensor Suhu &amp; Kelembaban </button> <button onclick="selectSensor(2, 'cahaya')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">☀️</span> Sensor Cahaya </button>
            </div>
            <p id="sensor-feedback-2" class="mt-3 text-sm hidden"></p>
           </div>
@@ -431,13 +440,13 @@
            <p id="action-feedback-2" class="mt-3 text-sm hidden"></p>
           </div>
          </div>
-         <div id="solution-2" class="mt-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hidden">
-          <h4 class="font-bold text-green-400 mb-2">✅ Solusi IoT Kamu:</h4>
-          <div class="flex items-center gap-4 text-sm"><span class="px-3 py-1 bg-amber-500/20 rounded-lg" id="sol-sensor-2">📡 Sensor</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-blue-500/20 rounded-lg">🌐 Internet</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-purple-500/20 rounded-lg">🖥️ Sistem</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-green-500/20 rounded-lg" id="sol-action-2">❄️ Aksi</span>
+         <div id="solution-2" class="p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hidden">
+          <h4 class="font-bold text-green-400 mb-2 text-sm">✅ Solusi IoT Kamu:</h4>
+          <div class="flex items-center gap-2 text-xs flex-wrap"><span class="px-2 py-1 bg-amber-500/20 rounded-lg" id="sol-sensor-2">📡 Sensor</span> <span class="text-slate-500">→</span> <span class="px-2 py-1 bg-blue-500/20 rounded-lg">🌐 Internet</span> <span class="text-slate-500">→</span> <span class="px-2 py-1 bg-purple-500/20 rounded-lg">🖥️ Sistem</span> <span class="text-slate-500">→</span> <span class="px-2 py-1 bg-green-500/20 rounded-lg" id="sol-action-2">❄️ Aksi</span>
           </div>
          </div>
         </div><!-- Case 3: Keran Air -->
-        <div id="case3" class="h-full flex flex-col hidden">
+        <div id="case3" class="h-full flex-col hidden">
          <div class="flex items-center gap-4 mb-6">
           <div class="w-16 h-16 rounded-xl bg-cyan-500/20 flex items-center justify-center text-4xl">
            🚰
@@ -447,7 +456,7 @@
            <p class="text-slate-400">"Air sering terbuang sia-sia di toilet sekolah"</p>
           </div>
          </div>
-         <div class="flex-1 grid grid-cols-2 gap-6">
+         <div class="grid grid-cols-2 gap-6">
           <div class="bg-slate-800/50 rounded-xl p-4">
            <h4 class="font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center text-cyan-400">1</span> Sensor apa yang dibutuhkan?</h4>
            <div class="flex flex-col gap-2"><button onclick="selectSensor(3, 'jarak')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">📏</span> Sensor Jarak (Ultrasonik) </button> <button onclick="selectSensor(3, 'suhu')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">🌡️</span> Sensor Suhu </button> <button onclick="selectSensor(3, 'cahaya')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">☀️</span> Sensor Cahaya </button>
@@ -461,13 +470,13 @@
            <p id="action-feedback-3" class="mt-3 text-sm hidden"></p>
           </div>
          </div>
-         <div id="solution-3" class="mt-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hidden">
-          <h4 class="font-bold text-green-400 mb-2">✅ Solusi IoT Kamu:</h4>
-          <div class="flex items-center gap-4 text-sm"><span class="px-3 py-1 bg-amber-500/20 rounded-lg" id="sol-sensor-3">📡 Sensor</span> <span class="text-slate-500">����</span> <span class="px-3 py-1 bg-blue-500/20 rounded-lg">🌐 Internet</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-purple-500/20 rounded-lg">🖥️ Sistem</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-green-500/20 rounded-lg" id="sol-action-3">🚿 Aksi</span>
+         <div id="solution-3" class="p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hidden">
+          <h4 class="font-bold text-green-400 mb-2 text-sm">✅ Solusi IoT Kamu:</h4>
+          <div class="flex items-center gap-2 text-xs flex-wrap"><span class="px-2 py-1 bg-amber-500/20 rounded-lg" id="sol-sensor-3">📡 Sensor</span> <span class="text-slate-500">→</span> <span class="px-2 py-1 bg-blue-500/20 rounded-lg">🌐 Internet</span> <span class="text-slate-500">→</span> <span class="px-2 py-1 bg-purple-500/20 rounded-lg">🖥️ Sistem</span> <span class="text-slate-500">→</span> <span class="px-2 py-1 bg-green-500/20 rounded-lg" id="sol-action-3">🚿 Aksi</span>
           </div>
          </div>
         </div><!-- Case 4: Parkir -->
-        <div id="case4" class="h-full flex flex-col hidden">
+        <div id="case4" class="flex-col gap-4 hidden">
          <div class="flex items-center gap-4 mb-6">
           <div class="w-16 h-16 rounded-xl bg-purple-500/20 flex items-center justify-center text-4xl">
            🅿️
@@ -477,7 +486,7 @@
            <p class="text-slate-400">"Susah mencari tempat parkir yang kosong"</p>
           </div>
          </div>
-         <div class="flex-1 grid grid-cols-2 gap-6">
+         <div class="grid grid-cols-2 gap-6">
           <div class="bg-slate-800/50 rounded-xl p-4">
            <h4 class="font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center text-cyan-400">1</span> Sensor apa yang dibutuhkan?</h4>
            <div class="flex flex-col gap-2"><button onclick="selectSensor(4, 'jarak')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">📏</span> Sensor Jarak (Ultrasonik) </button> <button onclick="selectSensor(4, 'suhu')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">🌡️</span> Sensor Suhu </button> <button onclick="selectSensor(4, 'gerak')" class="sensor-option py-3 px-4 border-2 border-slate-600 rounded-lg text-left hover:border-cyan-400 transition-all"> <span class="text-xl mr-2">👋</span> Sensor Gerak </button>
@@ -491,9 +500,9 @@
            <p id="action-feedback-4" class="mt-3 text-sm hidden"></p>
           </div>
          </div>
-         <div id="solution-4" class="mt-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hidden">
-          <h4 class="font-bold text-green-400 mb-2">✅ Solusi IoT Kamu:</h4>
-          <div class="flex items-center gap-4 text-sm"><span class="px-3 py-1 bg-amber-500/20 rounded-lg" id="sol-sensor-4">📡 Sensor</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-blue-500/20 rounded-lg">🌐 Internet</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-purple-500/20 rounded-lg">🖥️ Sistem</span> <span class="text-slate-500">→</span> <span class="px-3 py-1 bg-green-500/20 rounded-lg" id="sol-action-4">📺 Aksi</span>
+         <div id="solution-4" class="p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl hidden">
+          <h4 class="font-bold text-green-400 mb-2 text-sm">✅ Solusi IoT Kamu:</h4>
+          <div class="flex items-center gap-2 text-xs flex-wrap"><span class="px-2 py-1 bg-amber-500/20 rounded-lg" id="sol-sensor-4">📡 Sensor</span> <span class="text-slate-500">→</span> <span class="px-2 py-1 bg-blue-500/20 rounded-lg">🌐 Internet</span> <span class="text-slate-500">→</span> <span class="px-2 py-1 bg-purple-500/20 rounded-lg">🖥️ Sistem</span> <span class="text-slate-500">→</span> <span class="px-2 py-1 bg-green-500/20 rounded-lg" id="sol-action-4">📺 Aksi</span>
           </div>
          </div>
         </div>
@@ -558,10 +567,6 @@
 
     // Step 1: Simulation
     function runSimulation() {
-      if (simulationRun) return;
-      simulationRun = true;
-      
-      const person = document.getElementById('person');
       const lampBulb = document.getElementById('lamp-bulb');
       const lampGlow = document.getElementById('lamp-glow');
       const sensorBeam = document.getElementById('sensor-beam');
@@ -571,20 +576,23 @@
       simButton.textContent = '🔄 Menjalankan...';
       simButton.disabled = true;
       
-      // Person walks from door to under sensor
-      person.style.transform = 'translate(350, 150)';
+      // Reset everything first
+      lampBulb.classList.remove('on');
+      lampGlow.style.opacity = '0';
+      sensorBeam.classList.remove('active');
+      sensorLight.style.fill = '#38bdf8';
       
-      // After person enters, sensor detects
+      // Sensor detects person
       setTimeout(() => {
         sensorBeam.classList.add('active');
         sensorLight.style.fill = '#22c55e';
-      }, 1000);
+      }, 500);
       
       // Lamp turns on
       setTimeout(() => {
         lampBulb.classList.add('on');
         lampGlow.style.opacity = '1';
-      }, 1500);
+      }, 900);
       
       setTimeout(() => {
         simButton.innerHTML = `
@@ -594,33 +602,11 @@
           Ulangi Simulasi
         `;
         simButton.disabled = false;
-        simButton.onclick = resetSimulation;
-      }, 2000);
+      }, 1500);
     }
     
     function resetSimulation() {
-      const person = document.getElementById('person');
-      const lampBulb = document.getElementById('lamp-bulb');
-      const lampGlow = document.getElementById('lamp-glow');
-      const sensorBeam = document.getElementById('sensor-beam');
-      const sensorLight = document.getElementById('sensor-light');
-      const simButton = document.getElementById('simButton');
-      
-      person.style.transform = 'translate(450, 150)';
-      lampBulb.classList.remove('on');
-      lampGlow.style.opacity = '0';
-      sensorBeam.classList.remove('active');
-      sensorLight.style.fill = '#38bdf8';
-      
-      simButton.innerHTML = `
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        Jalankan Simulasi
-      `;
-      simButton.onclick = runSimulation;
-      simulationRun = false;
+      runSimulation();
     }
 
     // Step 1: Questions
@@ -706,6 +692,16 @@
     let placedItems = {};
 
     function initDragDrop() {
+      // Shuffle items on first load
+      const dragContainer = document.getElementById('drag-container');
+      const items = Array.from(dragContainer.children);
+      
+      // Fisher-Yates shuffle
+      for (let i = items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        dragContainer.appendChild(items[j]);
+      }
+      
       const dragItems = document.querySelectorAll('.drag-item');
       const dropZones = document.querySelectorAll('.drop-zone');
       
@@ -755,13 +751,22 @@
       // Remove previous item from this zone if any
       const existingItem = zone.querySelector('.drag-item');
       if (existingItem) {
-        document.getElementById('drag-container').appendChild(existingItem);
+        const existingType = existingItem.dataset.item;
+        // Show the original item back in container
+        const originalItems = document.querySelectorAll(`#drag-container .drag-item[data-item="${existingType}"]`);
+        originalItems.forEach(item => item.style.display = '');
+        
         delete placedItems[order];
       }
       
       // Place new item
       zone.innerHTML = '';
-      zone.appendChild(draggedItem.cloneNode(true));
+      const clonedItem = draggedItem.cloneNode(true);
+      clonedItem.classList.remove('dragging');
+      clonedItem.draggable = false;
+      zone.appendChild(clonedItem);
+      
+      // Hide the original dragged item
       draggedItem.style.display = 'none';
       placedItems[order] = itemType;
       
@@ -780,11 +785,35 @@
         placedItems['3'] === 'sistem' &&
         placedItems['4'] === 'aksi';
       
+      const allFilled = Object.keys(placedItems).length === 4;
+      
+      const feedback = document.getElementById('drag-feedback');
+      
       if (allCorrect && !dragDropComplete) {
         dragDropComplete = true;
-        document.getElementById('drag-feedback').classList.remove('hidden');
+        feedback.innerHTML = `
+          <div class="success-popup inline-flex items-center gap-3 px-6 py-3 bg-green-500/20 border border-green-500 rounded-xl">
+            <span class="text-3xl">🎉</span>
+            <div class="text-left">
+              <div class="font-bold text-green-400">Hebat! Urutan Benar!</div>
+              <div class="text-sm text-slate-300">Sensor → Internet → Sistem → Aksi</div>
+            </div>
+          </div>
+        `;
+        feedback.classList.remove('hidden');
         document.getElementById('nextStep2').classList.remove('opacity-50', 'pointer-events-none');
         document.querySelector('[data-step="2"]').classList.add('completed');
+      } else if (allFilled && !allCorrect) {
+        feedback.innerHTML = `
+          <div class="success-popup inline-flex items-center gap-3 px-6 py-3 bg-red-500/20 border border-red-500 rounded-xl">
+            <span class="text-3xl">❌</span>
+            <div class="text-left">
+              <div class="font-bold text-red-400">Ups! Urutan Belum Tepat</div>
+              <div class="text-sm text-slate-300">Coba pikirkan lagi alur kerja IoT yang benar!</div>
+            </div>
+          </div>
+        `;
+        feedback.classList.remove('hidden');
       }
     }
     
@@ -792,25 +821,51 @@
       placedItems = {};
       dragDropComplete = false;
       
-      const dragContainer = document.getElementById('drag-container');
-      const items = document.querySelectorAll('.drag-item');
-      items.forEach(item => {
-        item.style.display = '';
-        if (!dragContainer.contains(item)) {
-          dragContainer.appendChild(item);
-        }
-      });
-      
+      // Clear drop zones first
       const dropZones = document.querySelectorAll('.drop-zone');
       dropZones.forEach(zone => {
         zone.classList.remove('correct');
         const order = zone.dataset.order;
         const labels = ['Input', 'Koneksi', 'Proses', 'Output'];
         zone.innerHTML = `
-          <span class="text-4xl mb-1 text-slate-600">${order}️⃣</span>
+          <span class="text-4xl mb-1 text-slate-600">${order}</span>
           <span class="text-xs text-slate-500">${labels[order-1]}</span>
         `;
       });
+      
+      // Recreate items from scratch
+      const dragContainer = document.getElementById('drag-container');
+      dragContainer.innerHTML = '';
+      
+      const itemsData = [
+        { id: 'sensor', emoji: '👋', title: 'Sensor Gerak', desc: 'Mendeteksi objek', gradient: 'from-amber-500/20 to-orange-500/20', border: 'border-amber-500' },
+        { id: 'internet', emoji: '🌐', title: 'WiFi/Internet', desc: 'Mengirim data', gradient: 'from-blue-500/20 to-cyan-500/20', border: 'border-blue-500' },
+        { id: 'sistem', emoji: '🖥️', title: 'Server/Sistem', desc: 'Memproses data', gradient: 'from-purple-500/20 to-pink-500/20', border: 'border-purple-500' },
+        { id: 'aksi', emoji: '💡', title: 'Lampu (Aksi)', desc: 'Output/Respon', gradient: 'from-yellow-500/20 to-green-500/20', border: 'border-yellow-500' }
+      ];
+      
+      // Shuffle array
+      for (let i = itemsData.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [itemsData[i], itemsData[j]] = [itemsData[j], itemsData[i]];
+      }
+      
+      // Create new items
+      itemsData.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `drag-item px-6 py-4 bg-gradient-to-r ${item.gradient} border-2 ${item.border} rounded-xl cursor-grab`;
+        div.draggable = true;
+        div.dataset.item = item.id;
+        div.innerHTML = `
+          <div class="text-3xl mb-2">${item.emoji}</div>
+          <div class="font-semibold">${item.title}</div>
+          <div class="text-xs text-slate-400">${item.desc}</div>
+        `;
+        dragContainer.appendChild(div);
+      });
+      
+      // Reinitialize drag and drop
+      initDragDrop();
       
       document.getElementById('drag-feedback').classList.add('hidden');
       document.getElementById('nextStep2').classList.add('opacity-50', 'pointer-events-none');
@@ -821,14 +876,17 @@
       document.querySelectorAll('.case-card').forEach(card => card.classList.remove('active'));
       document.querySelectorAll('.case-card')[caseNum - 1].classList.add('active');
       
-      document.querySelectorAll('[id^="case"]').forEach(c => {
-        c.classList.add('hidden');
-        c.classList.remove('flex');
-      });
+      // Hide all cases
+      for (let i = 1; i <= 4; i++) {
+        const caseEl = document.getElementById(`case${i}`);
+        caseEl.classList.add('hidden');
+        caseEl.classList.remove('flex-col');
+      }
       
-      const caseEl = document.getElementById(`case${caseNum}`);
-      caseEl.classList.remove('hidden');
-      caseEl.classList.add('flex');
+      // Show selected case
+      const selectedCase = document.getElementById(`case${caseNum}`);
+      selectedCase.classList.remove('hidden');
+      selectedCase.classList.add('flex-col');
       
       currentCase = caseNum;
     }
@@ -854,7 +912,7 @@
       if (sensor === correct) {
         feedback.innerHTML = '✅ <span class="text-green-400">Pilihan tepat!</span>';
       } else {
-        feedback.innerHTML = '���� <span class="text-amber-400">Bisa jadi, tapi ada pilihan yang lebih tepat.</span>';
+        feedback.innerHTML = '🤔 <span class="text-amber-400">Bisa jadi, tapi ada pilihan yang lebih tepat.</span>';
       }
       
       updateSolutionDisplay(caseNum);
@@ -917,5 +975,5 @@
       }
     }
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c1fe50560e9b15c',t:'MTc2OTA5Mzc1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c202eb02022fdb4',t:'MTc2OTA5Njc2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
